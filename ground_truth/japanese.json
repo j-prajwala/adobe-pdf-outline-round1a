@@ -1,0 +1,396 @@
+{
+  "title": "IBM",
+  "outline": [
+    {
+      "level": "H1",
+      "text": "IBM",
+      "page": 1,
+      "children": [
+        {
+          "level": "H3",
+          "text": "目次",
+          "page": 3,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "表",
+          "page": 7,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "図",
+          "page": 9,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "第",
+          "page": 17,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "1",
+          "page": 17,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "章",
+          "page": 17,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "IBM Communications Server for Data Center",
+          "page": 17,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "Deployment on AIX",
+          "page": 17,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "について",
+          "page": 17,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "第",
+          "page": 31,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "2",
+          "page": 31,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "章",
+          "page": 31,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "ネットワークおよび",
+          "page": 31,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "IBM Communications",
+          "page": 31,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "Server for Data Center Deployment on AIX",
+          "page": 31,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "の計画",
+          "page": 31,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "Chapter 3. Installing CS/AIX on AIX servers",
+          "page": 39,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "第",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "4",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "章",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "Linux",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "での",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "IBM Remote API Client",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "のインスト",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "ール",
+          "page": 53,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "第",
+          "page": 59,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "5",
+          "page": 59,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "章",
+          "page": 59,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "IBM Remote API Clients on Linux for System z",
+          "page": 59,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "のインストール",
+          "page": 59,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "第",
+          "page": 65,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "6",
+          "page": 65,
+          "children": []
+        },
+        {
+          "level": "H3",
+          "text": "章",
+          "page": 65,
+          "children": []
+        },
+        {
+          "level": "H2",
+          "text": "AIX",
+          "page": 65,
+          "children": [
+            {
+              "level": "H3",
+              "text": "システムでの",
+              "page": 65,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "IBM Remote API Client",
+              "page": 65,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "のイ",
+              "page": 65,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "ンストール",
+              "page": 65,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "第",
+              "page": 69,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "7",
+              "page": 69,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "章",
+              "page": 69,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "Remote API Client on Windows",
+              "page": 69,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "の計画とインス",
+              "page": 69,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "トール",
+              "page": 69,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "第",
+              "page": 79,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "8",
+              "page": 79,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "章",
+              "page": 79,
+              "children": []
+            }
+          ]
+        },
+        {
+          "level": "H2",
+          "text": "CS/AIX",
+          "page": 79,
+          "children": [
+            {
+              "level": "H3",
+              "text": "の構成および使用",
+              "page": 79,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "第",
+              "page": 111,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "9",
+              "page": 111,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "章",
+              "page": 111,
+              "children": []
+            }
+          ]
+        },
+        {
+          "level": "H2",
+          "text": "CS/AIX",
+          "page": 111,
+          "children": [
+            {
+              "level": "H3",
+              "text": "と",
+              "page": 111,
+              "children": []
+            }
+          ]
+        },
+        {
+          "level": "H2",
+          "text": "SNA",
+          "page": 111,
+          "children": [
+            {
+              "level": "H3",
+              "text": "の情報リソース",
+              "page": 111,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "付録",
+              "page": 113,
+              "children": []
+            }
+          ]
+        },
+        {
+          "level": "H2",
+          "text": "A IBM",
+          "page": 113,
+          "children": [
+            {
+              "level": "H3",
+              "text": "へのご意見の送付方法",
+              "page": 113,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "付録",
+              "page": 115,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "B",
+              "page": 115,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "特記事項",
+              "page": 115,
+              "children": []
+            },
+            {
+              "level": "H3",
+              "text": "索引",
+              "page": 123,
+              "children": []
+            }
+          ]
+        }
+      ],
+      "score": 0
+    }
+  ]
+}

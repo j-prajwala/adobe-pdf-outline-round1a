@@ -1,6 +1,7 @@
 import fitz  # PyMuPDF
 import json
 import os
+import time
 
 
 def extract_headings_from_pdf(pdf_path):
@@ -12,7 +13,6 @@ def extract_headings_from_pdf(pdf_path):
     font_sizes = []
     spans = []
 
-    # Step 1: Extract and score all text spans
     for page_num in range(len(doc)):
         page = doc.load_page(page_num)
         blocks = page.get_text("dict")["blocks"]
@@ -31,7 +31,7 @@ def extract_headings_from_pdf(pdf_path):
                     flags = span.get("flags", 0)
 
                     is_bold = "bold" in font or flags & 2
-                    is_caps = text.isupper() and len(text) >= 3
+                    is_caps = text.isascii() and text.isupper() and len(text) >= 3
 
                     font_boost = 1.0
                     if is_bold:
@@ -52,7 +52,6 @@ def extract_headings_from_pdf(pdf_path):
                         "is_bold": is_bold,
                     })
 
-    # Step 2: Calculate thresholds for H1/H2/H3
     font_sizes = sorted(set(font_sizes), reverse=True)
     h1_size = font_sizes[0] if len(font_sizes) > 0 else 0
     h2_size = font_sizes[1] if len(font_sizes) > 1 else h1_size * 0.9
@@ -61,7 +60,6 @@ def extract_headings_from_pdf(pdf_path):
     print(f"[INFO] Font sizes (desc): {font_sizes}")
     print(f"[INFO] H1={h1_size}, H2={h2_size}, H3={h3_size}")
 
-    # Step 3: Classify headings
     candidate_headings = []
     for span in spans:
         size = span["size"]
@@ -69,7 +67,7 @@ def extract_headings_from_pdf(pdf_path):
         page = span["page"]
         is_bold = span["is_bold"]
 
-        if len(text) < 3 or text.isnumeric():
+        if len(text.strip()) == 0:
             continue
 
         if abs(size - h1_size) < 0.5:
@@ -87,12 +85,12 @@ def extract_headings_from_pdf(pdf_path):
             "page": page
         })
 
-    # Step 4: Build hierarchical outline
     outline = build_hierarchy(candidate_headings)
-
-    # Step 5: Title detection
     title_heading = next((h for h in candidate_headings if h["level"] == "H1"), None)
     title = title_heading["text"] if title_heading else os.path.basename(pdf_path)
+
+    # ✅ BONUS: Apply semantic re-ranking
+    outline = semantic_rerank(outline)
 
     return {
         "title": title,
@@ -101,11 +99,6 @@ def extract_headings_from_pdf(pdf_path):
 
 
 def build_hierarchy(flat_headings):
-    """
-    Build hierarchical structure:
-    - H2 under closest H1
-    - H3 under closest H2
-    """
     hierarchy = []
     current_h1 = None
     current_h2 = None
@@ -140,6 +133,26 @@ def build_hierarchy(flat_headings):
     return hierarchy
 
 
+def semantic_rerank(headings, keywords=None):
+    """
+    Re-rank headings based on relevance to target keywords.
+    This is a simple scoring heuristic (can later be replaced with BERT or LLM).
+    """
+    if not keywords:
+        keywords = ["introduction", "overview", "method", "result", "discussion", "conclusion"]
+
+    def score(text):
+        t = text.lower()
+        return sum(1 for kw in keywords if kw in t)
+
+    for h in headings:
+        if h.get("children"):
+            h["children"] = sorted(h["children"], key=lambda x: score(x["text"]), reverse=True)
+        h["score"] = score(h["text"])
+
+    return sorted(headings, key=lambda h: h["score"], reverse=True)
+
+
 def process_all_pdfs(input_dir="input", output_dir="output"):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -149,7 +162,12 @@ def process_all_pdfs(input_dir="input", output_dir="output"):
             continue
         input_path = os.path.join(input_dir, filename)
         print(f"[INFO] Processing {input_path}...")
+
+        start_time = time.time()
         outline_json = extract_headings_from_pdf(input_path)
+        elapsed = time.time() - start_time
+        print(f"[INFO] Extracted in {elapsed:.2f} seconds")
+
         output_filename = filename[:-4] + ".json"
         output_path = os.path.join(output_dir, output_filename)
         with open(output_path, "w", encoding="utf-8") as f:
