@@ -5,69 +5,78 @@ import os
 
 def extract_headings_from_pdf(pdf_path):
     """
-    Extract headings from PDF by analyzing font sizes and boldness,
-    then build hierarchical outline.
+    Extract headings from PDF by analyzing font sizes, boldness,
+    and additional style cues, then build hierarchical outline.
     """
     doc = fitz.open(pdf_path)
     font_sizes = []
-    text_blocks = []
+    spans = []
 
-    # Step 1: Extract all text spans info from all pages
+    # Step 1: Extract and score all text spans
     for page_num in range(len(doc)):
         page = doc.load_page(page_num)
         blocks = page.get_text("dict")["blocks"]
 
         for b in blocks:
             if b['type'] != 0:
-                # Skip non-text blocks
-                continue
-            for line in b["lines"]:
-                for span in line["spans"]:
+                continue  # Skip non-text blocks
+            for line in b.get("lines", []):
+                for span in line.get("spans", []):
                     text = span["text"].strip()
                     if not text:
                         continue
+
                     size = span["size"]
-                    flags = span["flags"]
-                    is_bold = bool(flags & 2)  # Bold check
-                    # Store info
-                    text_blocks.append({
+                    font = span.get("font", "").lower()
+                    flags = span.get("flags", 0)
+
+                    is_bold = "bold" in font or flags & 2
+                    is_caps = text.isupper() and len(text) >= 3
+
+                    font_boost = 1.0
+                    if is_bold:
+                        font_boost += 0.2
+                    if is_caps:
+                        font_boost += 0.1
+                    if "black" in font or "headline" in font:
+                        font_boost += 0.2
+
+                    weighted_size = size * font_boost
+                    font_sizes.append(weighted_size)
+
+                    spans.append({
                         "text": text,
-                        "size": size,
-                        "is_bold": is_bold,
+                        "size": weighted_size,
                         "page": page_num + 1,
-                        "font": span["font"],
+                        "font": font,
+                        "is_bold": is_bold,
                     })
-                    font_sizes.append(size)
 
-    # Step 2: Identify heading font-size thresholds (top 3 sizes)
-    unique_sizes = sorted(set(font_sizes), reverse=True)
-    h1_size = unique_sizes[0] if len(unique_sizes) > 0 else None
-    h2_size = unique_sizes[1] if len(unique_sizes) > 1 else None
-    h3_size = unique_sizes[2] if len(unique_sizes) > 2 else None
+    # Step 2: Calculate thresholds for H1/H2/H3
+    font_sizes = sorted(set(font_sizes), reverse=True)
+    h1_size = font_sizes[0] if len(font_sizes) > 0 else 0
+    h2_size = font_sizes[1] if len(font_sizes) > 1 else h1_size * 0.9
+    h3_size = font_sizes[2] if len(font_sizes) > 2 else h2_size * 0.9
 
-    # Debug print
-    print(f"[INFO] Font sizes (desc): {unique_sizes}")
+    print(f"[INFO] Font sizes (desc): {font_sizes}")
     print(f"[INFO] H1={h1_size}, H2={h2_size}, H3={h3_size}")
 
-    # Step 3: Filter and classify headings using heuristic
+    # Step 3: Classify headings
     candidate_headings = []
+    for span in spans:
+        size = span["size"]
+        text = span["text"]
+        page = span["page"]
+        is_bold = span["is_bold"]
 
-    for block in text_blocks:
-        size = block["size"]
-        text = block["text"]
-        page = block["page"]
-        is_bold = block["is_bold"]
-
-        # Ignore very short texts or numeric only
         if len(text) < 3 or text.isnumeric():
             continue
 
-        # Heuristic for heading classification using size and boldness:
-        if h1_size and abs(size - h1_size) < 0.5:
+        if abs(size - h1_size) < 0.5:
             level = "H1"
-        elif h2_size and abs(size - h2_size) < 0.5 and is_bold:
+        elif abs(size - h2_size) < 0.5 and is_bold:
             level = "H2"
-        elif h3_size and abs(size - h3_size) < 0.5 and is_bold:
+        elif abs(size - h3_size) < 0.5 and is_bold:
             level = "H3"
         else:
             continue
@@ -78,26 +87,24 @@ def extract_headings_from_pdf(pdf_path):
             "page": page
         })
 
-    # Step 4: Build hierarchy from flat heading list
+    # Step 4: Build hierarchical outline
     outline = build_hierarchy(candidate_headings)
 
-    # Step 5: Determine title as first H1 or fallback to filename
+    # Step 5: Title detection
     title_heading = next((h for h in candidate_headings if h["level"] == "H1"), None)
     title = title_heading["text"] if title_heading else os.path.basename(pdf_path)
 
-    output = {
+    return {
         "title": title,
         "outline": outline
     }
 
-    return output
-
 
 def build_hierarchy(flat_headings):
     """
-    Build hierarchical outline as a nested list.
-    H2 is child of closest preceding H1.
-    H3 is child of closest preceding H2.
+    Build hierarchical structure:
+    - H2 under closest H1
+    - H3 under closest H2
     """
     hierarchy = []
     current_h1 = None
@@ -117,21 +124,18 @@ def build_hierarchy(flat_headings):
             current_h1 = h_entry
             current_h2 = None
         elif level == "H2":
-            if current_h1 is None:
-                # No preceding H1, append at root
-                hierarchy.append(h_entry)
-            else:
+            if current_h1 is not None:
                 current_h1["children"].append(h_entry)
+            else:
+                hierarchy.append(h_entry)
             current_h2 = h_entry
         elif level == "H3":
-            if current_h2 is None:
-                # No preceding H2, attach to last H1 if available
-                if current_h1 is not None:
-                    current_h1["children"].append(h_entry)
-                else:
-                    hierarchy.append(h_entry)
-            else:
+            if current_h2 is not None:
                 current_h2["children"].append(h_entry)
+            elif current_h1 is not None:
+                current_h1["children"].append(h_entry)
+            else:
+                hierarchy.append(h_entry)
 
     return hierarchy
 
